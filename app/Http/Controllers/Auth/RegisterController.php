@@ -19,7 +19,7 @@ class RegisterController extends Controller
             'telefono' => ['required', 'string', 'max:15', 'unique:'.User::class],
             'email'=>['required','email','unique:users,email'],
             'password'=>['required','min:8','confirmed'],
-            'tipo_usuario' => ['required', 'in:agricultor,administrador,tecnico'],
+            'tipo_usuario' => ['required', 'in:agricultor,tecnico'],
         ]
     );
     $user = User::create(

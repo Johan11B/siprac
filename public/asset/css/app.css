@@ -385,7 +385,7 @@ footer {
     transform: translateY(-5px);
 }
 
-/* --- RESPONSIVIDAD (Manejo del menú en celulares) --- */
+/* --- RESPONSIVIDAD --- */
 
 @media (min-width: 768px) {
     #sidebar-wrapper {
@@ -399,10 +399,8 @@ footer {
 
 @media (max-width: 767px) {
     #sidebar-wrapper {
-        margin-left: -280px; /* Oculto por defecto en móvil */
+        margin-left: -280px; 
     }
-    
-    /* Esta clase se activa con el JavaScript del botón toggle */
     #wrapper.toggled #sidebar-wrapper {
         margin-left: 0;
     }
@@ -410,7 +408,7 @@ footer {
 
 /* Ajuste para la Navbar del Dashboard */
 #page-content-wrapper .navbar {
-    position: relative !important; /* Fuerza a que no sea absolute */
+    position: relative !important;
     height: auto !important;
     padding: 1rem 1.5rem;
 }

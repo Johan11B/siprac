@@ -36,7 +36,6 @@
                             <option value="">Seleccione un tipo</option>
                             <option value="agricultor" {{ old('tipo_usuario') == 'agricultor' ? 'selected' : '' }}>Agricultor</option>
                             <option value="tecnico" {{ old('tipo_usuario') == 'tecnico' ? 'selected' : '' }}>Técnico</option>
-                            <option value="administrador" {{ old('tipo_usuario') == 'administrador' ? 'selected' : '' }}>Administrador</option>
                         </select>
                         @error('tipo_usuario')
                             <div class="invalid-feedback">{{ $message }}</div>
