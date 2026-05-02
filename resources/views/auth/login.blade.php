@@ -16,14 +16,39 @@
         />
         <link rel="stylesheet" href="{{ asset('asset/css/app.css') }}">
     </head>
+    <body id="pagina-login" class="d-flex flex-column min-vh-100">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <a class="navbar-brand d-flex align-items-center">
+                        <img src="{{ asset('asset/images/icono.webp') }}" alt="Logo SIPRAC" class="logo-navbar">
+                        <span class="fw-bold">SIPRAC</span>
+                    </a>
 
-    <body id="pagina-login">
-        <main class="container-fluid d-flex align-items-center justify-content-center min-vh-100">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                
+                    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                        <ul class="navbar-nav align-items-center">
+                            <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Nosotros</a></li>
+                            <li class="nav-item me-3"><a class="nav-link" href="#">Tecnología</a></li>
+                            <li class="nav-item">
+                                <a class="btn btn-outline-dark btn-sm px-4 py-2" href="{{route('login')}}">Iniciar Sesión</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-register btn-outline-dark btn-sm px-4 py-2 " href="{{route('register')}}">Registrarse</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        <main class="container-fluid d-flex align-items-center justify-content-center flex-grow-1">
             <div class="card shadow-lg border-0 login-card">
                 <div class="card-body p-4">
-                <header>
+                <header class="text-center">
                     <div> 
-                        <img src="asset/images/icono.webp" alt="" class="img-fluid" id= "logo-login">
+                        <img src="{{ asset('asset/images/icono.webp') }}" alt="Logo" class="img-fluid logo-login mb-2">
                     </div>
                     <h1 class="titulo-login">Inicio de Sesión</h1>
                 </header>
@@ -49,6 +74,7 @@
                 </div>
             </div>
         </main>
+        
         
         <!-- Bootstrap JavaScript Libraries -->
         <script

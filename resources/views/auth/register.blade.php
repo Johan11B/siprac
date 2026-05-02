@@ -31,15 +31,7 @@
                         <input type="text" name="telefono" placeholder="Telefono" value="{{ old('telefono') }}"/>
                         <label for="email">Correo Electrónico:</label>
                         <input type="email" name="email" placeholder="Correo Electrónico" value="{{ old('email') }}"/>
-                        <label for="tipo_usuario" class="form-label">Tipo de usuario:</label>
-                        <select name="tipo_usuario" id="tipo_usuario" class="form-select @error('tipo_usuario') is-invalid @enderror" required>
-                            <option value="">Seleccione un tipo</option>
-                            <option value="agricultor" {{ old('tipo_usuario') == 'agricultor' ? 'selected' : '' }}>Agricultor</option>
-                            <option value="tecnico" {{ old('tipo_usuario') == 'tecnico' ? 'selected' : '' }}>Técnico</option>
-                        </select>
-                        @error('tipo_usuario')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+
                         <label for="password">Contraseña:</label>
                         <input type="password" name="password" placeholder="Contraseña"/> 
                         <label for="password_confirmation">Confirmar Contraseña:</label>
