@@ -1,32 +1,67 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Agricultor\EmpleadoController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
+// ============================================
+// Ruta pública — Landing page
+// ============================================
 Route::get('/', function () {
     return view('bienvenida');
+})->name('home');
+
+// ============================================
+// Rutas de autenticación (solo para invitados)
+// ============================================
+Route::middleware('guest')->group(function () {
+    // Registro
+    Route::get('/register', [RegisterController::class, 'create'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+
+    // Login
+    Route::get('/login', [LoginController::class, 'create'])->name('login');
+    Route::post('/login', [LoginController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('login.store');
 });
 
-// Llamar los controladores para el registro e inicio de sesión que estan en App\Http\Controllers\Auth
-use App\Http\Controllers\Auth\RegisterController; 
-use App\Http\Controllers\Auth\LoginController;
+// Logout (solo para autenticados)
+Route::post('/logout', [LoginController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');
 
-//-----------Rutas para el registro de usuarios-------------//
-Route::get('/register', [RegisterController::class, 'create'])->name('register');
-//Registra y usa el controlador para manejar la lógica de registro de usuarios
-Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+// ============================================
+// Dashboard — Redirige según rol del usuario
+// ============================================
+Route::middleware('auth')->group(function () {
+    // Dashboard principal (redirige según rol)
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-//-----------Rutas para el inicio de sesión-----------------//
-Route::get('/login', [LoginController::class, 'create'])->name('login');
-//Parte de seguridad para evitar ataques de fuerza bruta, limitando a 5 intentos por minuto
-Route::post('/login', [LoginController::class, 'store'])
-->middleware('throttle:5,1') //Limita a 5 intentos por minuto
-->name('login.store'); //Ruta para cerrar sesión, usando el método destroy del controlador de login
+    // Rutas existentes del dashboard (datos, alertas, configuración)
+    Route::get('/dashboard/datos', function () {
+        return view('dashboard.datos');
+    })->name('dashboard.datos');
 
-//-----------Ruta para cerrar sesión, usando el método destroy del controlador de login----//
-Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+    Route::get('/dashboard/alertas', function () {
+        return view('dashboard.alertas');
+    })->name('dashboard.alertas');
 
+    Route::get('/dashboard/configuracion', function () {
+        return view('dashboard.configuracion');
+    })->name('dashboard.configuracion');
+});
 
-//-----------Ruta para el dashboard, protegida por el middleware de autenticación------//
-Route::get('/dashboard', function(){
-    return view ('dashboard.index'); 
-})->middleware('auth')->name('dashboard.index');
+// ============================================
+// Rutas del Agricultor
+// ============================================
+Route::middleware(['auth', 'role:agricultor,administrador'])->prefix('agricultor')->group(function () {
+    // Gestión de empleados
+    Route::get('/empleados', [EmpleadoController::class, 'index'])->name('agricultor.empleados.index');
+    Route::get('/empleados/crear', [EmpleadoController::class, 'create'])->name('agricultor.empleados.create');
+    Route::post('/empleados', [EmpleadoController::class, 'store'])->name('agricultor.empleados.store');
+    Route::put('/empleados/{finca}/{empleado}', [EmpleadoController::class, 'update'])->name('agricultor.empleados.update');
+    Route::delete('/empleados/{finca}/{empleado}', [EmpleadoController::class, 'destroy'])->name('agricultor.empleados.destroy');
+});
