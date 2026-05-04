@@ -88,6 +88,17 @@
     </div>
 </div>
 
+{{-- Botón de Normalización de Datos --}}
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <a href="{{ route('normalizacion.index') }}" class="btn btn-lg btn-outline-primary w-100 py-3" style="border-width: 2px;">
+            <i class="bi bi-lightning-fill me-2"></i>
+            <span class="fw-semibold">Normalización de Datos</span>
+            <small class="d-block mt-1" style="font-weight: 400;">Carga datos crudos y obtén un Excel normalizado</small>
+        </a>
+    </div>
+</div>
+
 {{-- ============================================ --}}
 {{-- TABLA DE ÚLTIMAS LECTURAS --}}
 {{-- ============================================ --}}

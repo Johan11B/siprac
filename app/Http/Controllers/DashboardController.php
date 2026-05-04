@@ -79,12 +79,22 @@ class DashboardController extends Controller
             $q->where('nombre', 'solicitante');
         })->where('activo', true)->count();
 
-        $ultimaLectura = \App\Models\Lectura::latest('fecha_lectura')->first();
-        $temperaturaActual = $ultimaLectura->temp_externa ?? '--';
-        $ultimaActualizacion = $ultimaLectura->fecha_lectura ?? null;
-        $humedadActual = $ultimaLectura->humedad_externa ?? '--';
-        $vientoActual = $ultimaLectura->viento_vel ?? '--';
-        $lluviaHoy = $ultimaLectura->lluvia_dia ?? 0;
+        $normalizedLastRecord = session('normalized_last_record');
+
+        if (!empty($normalizedLastRecord)) {
+            $temperaturaActual = $normalizedLastRecord['temp_externa'] ?? '--';
+            $ultimaActualizacion = isset($normalizedLastRecord['fecha_lectura']) ? \Carbon\Carbon::parse($normalizedLastRecord['fecha_lectura']) : null;
+            $humedadActual = $normalizedLastRecord['humedad_externa'] ?? '--';
+            $vientoActual = $normalizedLastRecord['vel_viento'] ?? '--';
+            $lluviaHoy = $normalizedLastRecord['lluvia_24h'] ?? $normalizedLastRecord['lluvia_hora'] ?? $normalizedLastRecord['lluvia_total'] ?? 0;
+        } else {
+            $ultimaLectura = \App\Models\Lectura::latest('fecha_lectura')->first();
+            $temperaturaActual = $ultimaLectura->temp_externa ?? '--';
+            $ultimaActualizacion = $ultimaLectura->fecha_lectura ?? null;
+            $humedadActual = $ultimaLectura->humedad_externa ?? '--';
+            $vientoActual = $ultimaLectura->viento_vel ?? '--';
+            $lluviaHoy = $ultimaLectura->lluvia_dia ?? 0;
+        }
 
         $ultimasLecturas = \App\Models\Lectura::with(['estacion.finca'])->latest('fecha_lectura')->take(5)->get();
 

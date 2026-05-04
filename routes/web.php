@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Agricultor\EmpleadoController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DataNormalizationController;
 use Illuminate\Support\Facades\Route;
 
 // ============================================
@@ -52,6 +53,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/configuracion', function () {
         return view('dashboard.configuracion');
     })->name('dashboard.configuracion');
+
+    // ========================================
+    // Normalización de Datos (Admin y Agricultor)
+    // ========================================
+    Route::middleware('role:administrador,agricultor')->group(function () {
+        Route::get('/normalizacion', [DataNormalizationController::class, 'index'])->name('normalizacion.index');
+        Route::post('/normalizacion/normalizar', [DataNormalizationController::class, 'normalize'])->name('normalizacion.normalize');
+        Route::get('/normalizacion/descargar', [DataNormalizationController::class, 'download'])->name('normalizacion.download');
+    });
 });
 
 // ============================================
