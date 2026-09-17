@@ -120,6 +120,7 @@ class DataNormalizationController extends Controller
             return back()->with([
                 'success' => $mensaje,
                 'summary' => $summary,
+                'forecast' => $forecast,
             ]);
         } catch (Exception $e) {
             return back()->with('error', 'Error: '.$e->getMessage());

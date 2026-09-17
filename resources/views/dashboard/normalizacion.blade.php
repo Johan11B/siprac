@@ -226,6 +226,61 @@
                         </table>
                     </div>
 
+                    @php($forecast = session('forecast', session('normalization_forecast', [])))
+                    @if(!empty($forecast))
+                        <div class="mt-4">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <h6 class="mb-1"><i class="bi bi-cloud-sun text-primary me-2"></i>Predicción agroclimática</h6>
+                                    <p class="text-muted small mb-0">Estimación estadística de las próximas 12 horas basada en el archivo reprocesado.</p>
+                                </div>
+                                <span class="chart-period-badge">{{ $forecast['data_points'] ?? 0 }} lecturas</span>
+                            </div>
+                            @if(($forecast['available'] ?? false) && !empty($forecast['items']))
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Hora</th>
+                                            <th>Temperatura</th>
+                                            <th>Humedad</th>
+                                            <th>Viento</th>
+                                            <th>Lluvia</th>
+                                            <th>Riesgo</th>
+                                            <th>Confianza</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($forecast['items'] as $item)
+                                            <tr>
+                                                <td class="fw-semibold">{{ $item['label'] ?? '--' }} <span class="text-muted small">({{ $item['date_label'] ?? '--' }})</span></td>
+                                                <td>{{ $item['temperature'] ?? '--' }} °C</td>
+                                                <td>{{ $item['humidity'] ?? '--' }}%</td>
+                                                <td>{{ $item['wind'] ?? '--' }} m/s</td>
+                                                <td>{{ $item['rain'] ?? '--' }} mm</td>
+                                                <td>
+                                                    <span class="badge {{ ($item['risk'] ?? '') === 'Riesgo de helada' ? 'bg-danger' : (($item['risk'] ?? '') === 'Lluvia intensa' ? 'bg-warning text-dark' : 'bg-success') }}">
+                                                        {{ $item['risk'] ?? 'Sin dato' }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ $item['confidence'] ?? '--' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            @else
+                                <div class="alert alert-info mb-0">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    {{ $forecast['message'] ?? 'No hay suficientes lecturas para generar la predicción de 12 horas.' }}
+                                </div>
+                            @endif
+                            <p class="text-muted small mt-2 mb-0">
+                                <i class="bi bi-info-circle me-1"></i>{{ $forecast['message'] ?? 'La predicción es orientativa y no sustituye las alertas ni la validación en campo.' }}
+                            </p>
+                        </div>
+                    @endif
+
                     <!-- Botón de Descarga -->
                     <div class="mt-4 d-flex gap-2">
                         <a href="{{ route('normalizacion.download') }}" class="btn btn-success">
