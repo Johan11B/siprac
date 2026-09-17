@@ -1,12 +1,12 @@
 {{-- SIPRAC Dashboard - Normalización de Datos --}}
 @extends('dashboard.layout')
 
-@section('page-title', 'Normalización de Datos')
-@section('navbar-title', 'Normalización de Datos')
+@section('page-title', 'Preprocesamiento de Datos')
+@section('navbar-title', 'Preprocesamiento de Datos')
 
 @section('content')
 
-<div class="section-label">Normalización de Datos Meteorológicos</div>
+<div class="section-label">Preprocesamiento, imputación y outliers</div>
 
 <!-- Descripción -->
 <div class="chart-card mb-4">
@@ -16,11 +16,12 @@
                 <i class="bi bi-info-circle text-info" style="font-size: 1.5rem;"></i>
             </div>
             <div>
-                <h6 class="fw-bold mb-2">¿Qué es la normalización de datos?</h6>
+                <h6 class="fw-bold mb-2">¿Qué hace este proceso?</h6>
                 <p class="text-muted mb-0">
-                    Carga un archivo Excel con datos meteorológicos crudos de tu estación. El sistema normalizará automáticamente 
-                    estos datos, calculando valores derivados como punto de rocío y sensación térmica. 
-                    Luego podrás descargar el archivo con todos los datos normalizados.
+                    Carga un archivo de la estación (CSV o Excel). El sistema convierte centinelas (`--`, `---`)
+                    en nulos, imputa huecos cortos por interpolación temporal, completa rachas largas y viento con mediana,
+                    etiqueta outliers (IQR, Z-score, Isolation Forest, DBSCAN) <strong>sin eliminar eventos climáticos reales</strong>
+                    y guarda las lecturas limpias para el resto del dashboard.
                 </p>
             </div>
         </div>
@@ -65,13 +66,24 @@
             <div class="p-4">
                 <form action="{{ route('normalizacion.normalize') }}" method="POST" enctype="multipart/form-data" id="form-normalizacion">
                     @csrf
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Estación destino</label>
+                        <select name="estacion_id" class="form-select" {{ $estaciones->isEmpty() ? 'disabled' : '' }}>
+                            @forelse($estaciones as $estacion)
+                                <option value="{{ $estacion->id }}">{{ $estacion->nombre_estacion }} — {{ $estacion->finca->nombre_finca ?? 'Sin finca' }}</option>
+                            @empty
+                                <option value="">No hay estaciones registradas</option>
+                            @endforelse
+                        </select>
+                        <p class="text-muted small mb-0 mt-1">Las lecturas limpias se guardan aquí para mostrarlas en Inicio y Datos Climáticos.</p>
+                    </div>
 
                     <!-- Zona de Drop -->
                     <div class="drop-zone mb-4" id="drop-zone">
                         <div class="d-flex flex-column align-items-center gap-2">
                             <i class="bi bi-cloud-upload" style="font-size: 2.5rem; color: #cbd5e1;"></i>
                             <p class="mb-1 fw-semibold">Arrastra un archivo aquí o haz clic para seleccionar</p>
-                            <p class="text-muted small">Formatos: .xlsx, .xls, .csv | Máximo: 10MB</p>
+                            <p class="text-muted small">Formatos: .xlsx, .xls, .csv (incluida la exportación utf-16 de la estación) | Máximo: 20MB</p>
                         </div>
                         <input type="file" name="file" id="file-input" class="d-none" accept=".xlsx,.xls,.csv">
                     </div>
@@ -93,7 +105,7 @@
                     <!-- Botones -->
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary" id="btn-normalize" disabled>
-                            <i class="bi bi-lightning-fill me-2"></i>Normalizar Datos
+                            <i class="bi bi-lightning-fill me-2"></i>Preprocesar datos
                         </button>
                         <span class="text-muted small d-flex align-items-center">
                             Selecciona un archivo para continuar
@@ -134,7 +146,7 @@
                 <div class="p-3 bg-info bg-opacity-10 rounded">
                     <p class="small mb-0">
                         <i class="bi bi-info-circle text-info me-1"></i>
-                        El sistema calculará automáticamente el punto de rocío y la sensación térmica.
+                        No se borran lluvias o ráfagas fuertes: se etiquetan. Isolation Forest y DBSCAN usan variables estandarizadas (Z-score).
                     </p>
                 </div>
             </div>

@@ -29,6 +29,11 @@ class Lectura extends Model
         'lluvia_total',
         'humedad_suelo',
         'temperatura_suelo',
+        'outlier_iqr',
+        'outlier_zscore',
+        'outlier_isolation_forest',
+        'cluster_dbscan',
+        'outlier_consenso',
     ];
 
     protected function casts(): array
@@ -41,6 +46,11 @@ class Lectura extends Model
             'punto_rocio' => 'float',
             'lluvia_hora' => 'float',
             'lluvia_dia' => 'float',
+            'outlier_iqr' => 'boolean',
+            'outlier_zscore' => 'boolean',
+            'outlier_isolation_forest' => 'boolean',
+            'cluster_dbscan' => 'integer',
+            'outlier_consenso' => 'boolean',
         ];
     }
 
@@ -50,5 +60,20 @@ class Lectura extends Model
     public function estacion(): BelongsTo
     {
         return $this->belongsTo(Estacion::class);
+    }
+
+    public function estadoClima(): string
+    {
+        if ($this->temp_externa !== null && $this->temp_externa <= 2) {
+            return 'Helada';
+        }
+        if ($this->temp_externa !== null && $this->temp_externa <= 4) {
+            return 'Precaución';
+        }
+        if ($this->outlier_consenso) {
+            return 'Atípico';
+        }
+
+        return 'Normal';
     }
 }

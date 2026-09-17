@@ -78,7 +78,14 @@
                     </li>
                     @endif
 
-                    {{-- Solo agricultor ve Empleados --}}
+                    @if(auth()->user()->tieneAlgunRol(['agricultor', 'administrador']))
+                    <li class="nav-item">
+                        <a href="{{ route('normalizacion.index') }}" class="nav-link {{ request()->routeIs('normalizacion.*') ? 'active' : '' }}">
+                            <span class="nav-icon"><i class="bi bi-lightning-fill"></i></span>
+                            Preprocesamiento
+                        </a>
+                    </li>
+                    @endif
                     @if(auth()->user()->tieneAlgunRol(['agricultor', 'administrador']))
                     <li class="nav-item">
                         <a href="{{ route('agricultor.empleados.index') }}" class="nav-link {{ request()->routeIs('agricultor.empleados.*') ? 'active' : '' }}" id="nav-empleados">

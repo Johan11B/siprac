@@ -15,9 +15,9 @@
             <div class="d-flex align-items-start justify-content-between">
                 <div>
                     <div class="metric-label">Temperatura Actual</div>
-                    <div class="metric-value">{{ is_numeric($temperaturaActual) ? number_format($temperaturaActual, 1) : $temperaturaActual }}°C</div>
+                    <div class="metric-value">{{ is_numeric($clima['temperatura']) ? number_format($clima['temperatura'], 1) : '--' }}°C</div>
                     <div class="metric-trend" style="color: #64748b;">
-                        <i class="bi bi-clock me-1"></i> Actualizado: {{ $ultimaActualizacion instanceof \DateTime ? $ultimaActualizacion->format('H:i') : 'Sin datos' }}
+                        <i class="bi bi-clock me-1"></i> Actualizado: {{ $clima['actualizado'] instanceof \DateTimeInterface ? $clima['actualizado']->format('d/m H:i') : 'Sin datos' }}
                     </div>
                 </div>
                 <div class="metric-icon temp"><i class="bi bi-thermometer-half"></i></div>
@@ -30,7 +30,7 @@
             <div class="d-flex align-items-start justify-content-between">
                 <div>
                     <div class="metric-label">Humedad Actual</div>
-                    <div class="metric-value">{{ is_numeric($humedadActual) ? $humedadActual : '--' }}%</div>
+                    <div class="metric-value">{{ is_numeric($clima['humedad']) ? $clima['humedad'] : '--' }}%</div>
                     <div class="metric-trend" style="color: #64748b;">
                         <i class="bi bi-droplet me-1"></i> Relativa
                     </div>
@@ -45,7 +45,7 @@
             <div class="d-flex align-items-start justify-content-between">
                 <div>
                     <div class="metric-label">Viento Actual</div>
-                    <div class="metric-value">{{ is_numeric($vientoActual) ? number_format($vientoActual, 1) : $vientoActual }} m/s</div>
+                    <div class="metric-value">{{ is_numeric($clima['viento']) ? number_format($clima['viento'], 1) : '--' }} m/s</div>
                     <div class="metric-trend" style="color: #64748b;">
                         <i class="bi bi-wind me-1"></i> Velocidad
                     </div>
@@ -60,7 +60,7 @@
             <div class="d-flex align-items-start justify-content-between">
                 <div>
                     <div class="metric-label">Lluvia Hoy</div>
-                    <div class="metric-value">{{ number_format($lluviaHoy, 1) }} mm</div>
+                    <div class="metric-value">{{ number_format($clima['lluvia'] ?? 0, 1) }} mm</div>
                     <div class="metric-trend" style="color: #64748b;">
                         <i class="bi bi-cloud-rain me-1"></i> Acumulado
                     </div>
@@ -94,7 +94,7 @@
         <a href="{{ route('normalizacion.index') }}" class="btn btn-lg btn-outline-primary w-100 py-3" style="border-width: 2px;">
             <i class="bi bi-lightning-fill me-2"></i>
             <span class="fw-semibold">Normalización de Datos</span>
-            <small class="d-block mt-1" style="font-weight: 400;">Carga datos crudos y obtén un Excel normalizado</small>
+            <small class="d-block mt-1" style="font-weight: 400;">Imputa nulos, etiqueta outliers y guarda lecturas limpias</small>
         </a>
     </div>
 </div>
@@ -120,6 +120,7 @@
                             <th>Humedad</th>
                             <th>Viento</th>
                             <th>Lluvia 24h</th>
+                            <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -132,12 +133,21 @@
                             <td>{{ $lectura->humedad_externa ?? '--' }}%</td>
                             <td>{{ number_format($lectura->viento_vel ?? 0, 1) }} m/s</td>
                             <td>{{ number_format($lectura->lluvia_dia ?? 0, 1) }} mm</td>
+                            <td>
+                                @if($lectura->outlier_consenso)
+                                    <span class="status-badge warning">Consenso</span>
+                                @elseif($lectura->outlier_isolation_forest)
+                                    <span class="status-badge warning">Atípico</span>
+                                @else
+                                    <span class="status-badge online">{{ $lectura->estadoClima() }}</span>
+                                @endif
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
+                            <td colspan="8" class="text-center text-muted py-4">
                                 <i class="bi bi-database-slash fs-3"></i><br>
-                                No hay lecturas registradas. Importa los datos con: php artisan import:lecturas 1
+                                No hay lecturas registradas. Carga un archivo en Preprocesamiento.
                             </td>
                         </tr>
                         @endforelse
@@ -236,6 +246,7 @@
         options: {
             responsive: true,
             maintainAspectRatio: true,
+            spanGaps: true,
             interaction: {
                 mode: 'index',
                 intersect: false

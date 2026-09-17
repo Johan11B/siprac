@@ -42,9 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Rutas existentes del dashboard (datos, alertas, configuración)
-    Route::get('/dashboard/datos', function () {
-        return view('dashboard.datos');
-    })->name('dashboard.datos');
+    Route::get('/dashboard/datos', [DashboardController::class, 'datos'])->name('dashboard.datos');
 
     Route::get('/dashboard/alertas', function () {
         return view('dashboard.alertas');

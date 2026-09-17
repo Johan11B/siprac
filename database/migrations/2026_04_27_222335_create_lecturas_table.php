@@ -47,10 +47,16 @@ return new class extends Migration
             $table->float('humedad_suelo')->nullable();
             $table->float('temperatura_suelo')->nullable();
 
+            // Diagnóstico de preprocesamiento (no se eliminan outliers)
+            $table->boolean('outlier_iqr')->default(false);
+            $table->boolean('outlier_zscore')->default(false);
+            $table->boolean('outlier_isolation_forest')->default(false);
+            $table->integer('cluster_dbscan')->nullable();
+            $table->boolean('outlier_consenso')->default(false);
+
             $table->timestamps();
 
-            // Índices para búsquedas rápidas
-            $table->index(['estacion_id', 'fecha_lectura']);
+            $table->unique(['estacion_id', 'fecha_lectura'], 'lecturas_estacion_fecha_unique');
         });
     }
 
