@@ -85,6 +85,7 @@ class DataNormalizationController extends Controller
             $lastRecord = $result['last_record'] ?? [];
             $outliers = $result['outliers'] ?? [];
             $preview = $result['preview'] ?? [];
+            $forecast = $result['forecast'] ?? [];
             $importados = 0;
 
             if (($outliers['sklearn_disponible'] ?? true) === false) {
@@ -107,6 +108,7 @@ class DataNormalizationController extends Controller
                 'normalized_last_record' => $lastRecord,
                 'normalization_outliers' => $outliers,
                 'normalization_preview' => $preview,
+                'normalization_forecast' => $forecast,
                 'normalization_imported' => $importados,
             ]);
 

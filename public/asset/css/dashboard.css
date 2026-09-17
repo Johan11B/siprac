@@ -34,6 +34,192 @@ body {
 }
 
 /* ============================================
+   ASISTENTE AGROCLIMATICO
+   ============================================ */
+.siprac-chatbot {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1050;
+    font-family: 'Inter', sans-serif;
+}
+
+.siprac-chatbot__toggle {
+    min-height: 52px;
+    padding: 0.75rem 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    border: 0;
+    border-radius: 16px;
+    background: #0f766e;
+    color: #fff;
+    box-shadow: 0 10px 28px rgba(15, 118, 110, 0.28);
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.siprac-chatbot__toggle:hover {
+    background: #115e59;
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(15, 118, 110, 0.34);
+}
+
+.siprac-chatbot__toggle i {
+    font-size: 1.15rem;
+}
+
+.siprac-chatbot__panel {
+    position: absolute;
+    right: 0;
+    bottom: 66px;
+    width: min(390px, calc(100vw - 32px));
+    overflow: hidden;
+    border: 1px solid #dbe4e5;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 20px 55px rgba(15, 23, 42, 0.18);
+}
+
+.siprac-chatbot__header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 1.2rem;
+    background: linear-gradient(135deg, #115e59, #0f766e);
+    color: #fff;
+}
+
+.siprac-chatbot__eyebrow {
+    color: #99f6e4;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.siprac-chatbot__header h2 {
+    margin: 0.2rem 0 0.25rem;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.siprac-chatbot__header p {
+    margin: 0;
+    color: #ccfbf1;
+    font-size: 0.76rem;
+}
+
+.siprac-chatbot__close {
+    align-self: flex-start;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 9px;
+    background: transparent;
+    color: #fff;
+}
+
+.siprac-chatbot__messages {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    height: 260px;
+    padding: 1rem;
+    overflow-y: auto;
+    background: #f8fafc;
+}
+
+.siprac-chatbot__message {
+    max-width: 88%;
+    padding: 0.7rem 0.8rem;
+    border-radius: 12px;
+    color: #334155;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.siprac-chatbot__message--assistant {
+    align-self: flex-start;
+    border: 1px solid #dbe4e5;
+    background: #fff;
+}
+
+.siprac-chatbot__message--user {
+    align-self: flex-end;
+    background: #d1fae5;
+    color: #14532d;
+}
+
+.siprac-chatbot__message--error {
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.siprac-chatbot__message--loading {
+    color: #64748b;
+    font-style: italic;
+}
+
+.siprac-chatbot__suggestions {
+    display: flex;
+    gap: 0.45rem;
+    padding: 0.75rem 1rem 0;
+    overflow-x: auto;
+}
+
+.siprac-chatbot__suggestions button {
+    flex: 0 0 auto;
+    border: 1px solid #b7d7d3;
+    border-radius: 999px;
+    padding: 0.38rem 0.65rem;
+    background: #f0fdfa;
+    color: #115e59;
+    font-size: 0.7rem;
+}
+
+.siprac-chatbot__form {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem 0.45rem;
+}
+
+.siprac-chatbot__form input {
+    min-width: 0;
+    flex: 1;
+    border: 1px solid #cbd5e1;
+    border-radius: 11px;
+    padding: 0.65rem 0.75rem;
+    color: #0f172a;
+    font-size: 0.8rem;
+}
+
+.siprac-chatbot__form input:focus {
+    outline: 2px solid rgba(13, 148, 136, 0.25);
+    border-color: #0d9488;
+}
+
+.siprac-chatbot__form button {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    border: 0;
+    border-radius: 11px;
+    background: #0f766e;
+    color: #fff;
+}
+
+.siprac-chatbot__disclaimer {
+    margin: 0;
+    padding: 0 1rem 0.9rem;
+    color: #94a3b8;
+    font-size: 0.65rem;
+    line-height: 1.35;
+}
+
+/* ============================================
    SIDEBAR
    ============================================ */
 #sidebar-wrapper {
@@ -546,6 +732,56 @@ body {
 
 .chart-card:hover {
     box-shadow: var(--card-shadow-hover);
+}
+
+.prediction-card {
+    overflow: hidden;
+}
+
+.prediction-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    color: #64748b;
+    font-size: 0.72rem;
+}
+
+.prediction-table {
+    margin-top: 0.75rem;
+}
+
+.prediction-table thead th,
+.prediction-table tbody td {
+    white-space: nowrap;
+}
+
+.prediction-risk {
+    display: inline-flex;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.prediction-risk.stable {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.prediction-risk.warning {
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.empty-state {
+    color: #64748b;
+    text-align: center;
+}
+
+.empty-state i {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #94a3b8;
 }
 
 .chart-card .card-header-custom {
@@ -1096,6 +1332,31 @@ body {
 
     .top-navbar {
         padding: 0.75rem 1rem;
+    }
+
+    .siprac-chatbot {
+        right: 16px;
+        bottom: 16px;
+    }
+
+    .siprac-chatbot__toggle {
+        width: 52px;
+        height: 52px;
+        justify-content: center;
+        padding: 0;
+        border-radius: 50%;
+    }
+
+    .siprac-chatbot__toggle-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
     }
 }
 

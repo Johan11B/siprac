@@ -17,6 +17,7 @@ import math
 import os
 import sys
 import unicodedata
+from datetime import datetime
 from pathlib import Path
 
 os.environ.setdefault("LOKY_MAX_CPU_COUNT", "1")
@@ -265,7 +266,8 @@ def parsear_fecha(serie):
 
 
 def imputar(df):
-    nulos_iniciales = int(df[COLS_INTERP].isna().any(axis=1).sum()) if all(c in df.columns for c in COLS_INTERP[:2]) else 0
+    columnas_presentes = [col for col in COLS_INTERP if col in df.columns]
+    nulos_iniciales = int(df[columnas_presentes].isna().any(axis=1).sum()) if columnas_presentes else 0
 
     for col in COLS_INTERP:
         if col in df.columns:
@@ -410,6 +412,68 @@ def detectar_outliers(df):
             "No se eliminan outliers: viento y lluvia extremos se conservan como eventos reales. "
             "Solo se etiquetan. outlier_consenso marca coincidencia de los métodos disponibles."
         ),
+    }
+
+
+def calcular_pronostico_horario(df, horas=12):
+    """Estima las siguientes horas usando el histórico disponible en el archivo."""
+    columnas = ["fecha_lectura", "temp_externa"]
+    historico = df.copy()
+    if any(col not in historico.columns for col in columnas):
+        return {"available": False, "message": "Faltan fecha_lectura o temp_externa.", "data_points": 0, "items": [], "source": "uploaded_file"}
+
+    historico = historico.dropna(subset=columnas).sort_values("fecha_lectura")
+    if len(historico) < 6:
+        return {"available": False, "message": "Se necesitan al menos 6 lecturas con fecha y temperatura.", "data_points": int(len(historico)), "items": [], "source": "uploaded_file"}
+
+    reciente = historico.tail(6)
+    base = pd.Timestamp(historico.iloc[-1]["fecha_lectura"]).floor("h")
+    items = []
+
+    def promedio(filas, columna):
+        if columna not in filas.columns:
+            return None
+        valores = pd.to_numeric(filas[columna], errors="coerce").dropna()
+        return round(float(valores.mean()), 1) if not valores.empty else None
+
+    for offset in range(1, horas + 1):
+        objetivo = base + pd.Timedelta(hours=offset)
+        misma_hora = historico[historico["fecha_lectura"].dt.hour == objetivo.hour]
+        muestra = misma_hora if not misma_hora.empty else reciente
+        peso_historico = 0.7 if not misma_hora.empty else 0.35
+
+        def combinar(columna):
+            historico_promedio = promedio(muestra, columna)
+            reciente_promedio = promedio(reciente, columna)
+            if historico_promedio is None:
+                return reciente_promedio
+            if reciente_promedio is None:
+                return historico_promedio
+            return round((historico_promedio * peso_historico) + (reciente_promedio * (1 - peso_historico)), 1)
+
+        temperatura = combinar("temp_externa")
+        lluvia = combinar("lluvia_dia") if "lluvia_dia" in historico.columns else combinar("lluvia_hora")
+        riesgo = "Riesgo de helada" if temperatura is not None and temperatura <= 2 else "Lluvia intensa" if lluvia is not None and lluvia >= 10 else "Condición estable"
+        items.append({
+            "datetime": objetivo.isoformat(),
+            "label": objetivo.strftime("%H:%M"),
+            "date_label": objetivo.strftime("%d/%m"),
+            "temperature": temperatura,
+            "humidity": combinar("humedad_externa"),
+            "wind": combinar("viento_vel"),
+            "rain": lluvia,
+            "risk": riesgo,
+            "confidence": "Media" if len(misma_hora) >= 3 else "Baja",
+        })
+
+    return {
+        "available": True,
+        "message": "Estimación estadística basada en las lecturas del archivo cargado.",
+        "generated_at": datetime.now().astimezone().isoformat(),
+        "timezone": "America/Bogota",
+        "data_points": int(len(historico)),
+        "items": items,
+        "source": "uploaded_file",
     }
 
 
@@ -578,6 +642,8 @@ def preprocesar(input_file, output_file):
     for _, row in preview_df.iterrows():
         preview.append({k: native(row[k]) for k in preview_df.columns})
 
+    forecast = calcular_pronostico_horario(df)
+
     csv_cols = [c for c in COLUMNAS_DB + [
         "outlier_iqr", "outlier_zscore", "outlier_isolation_forest", "cluster_dbscan", "outlier_consenso"
     ] if c in df.columns]
@@ -594,6 +660,7 @@ def preprocesar(input_file, output_file):
         "outliers": outliers,
         "preview": preview,
         "csv_file": csv_path,
+        "forecast": forecast,
         "python_executable": sys.executable,
     }))
 

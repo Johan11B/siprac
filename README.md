@@ -54,6 +54,19 @@ In order to ensure that the Laravel community is welcoming to all, please review
 
 If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
+## Asistente agroclimático
+
+El dashboard incluye un chatbot de SIPRAC para consultar el funcionamiento del proyecto, sensores IoT, datos climáticos, heladas, lluvias, humedad y alertas agroclimáticas.
+
+El chatbot funciona en dos modos:
+
+- **Modo local:** funciona sin credenciales externas con respuestas base sobre SIPRAC y meteorología.
+- **Modo IA:** usa un proveedor compatible con OpenAI Chat Completions mediante las variables `AI_API_KEY`, `AI_API_URL` y `AI_MODEL` del archivo `.env`.
+
+La API key se mantiene en el backend y nunca se envía al navegador. El endpoint está protegido por autenticación y limitado a 20 consultas por minuto.
+
+La configuración inicial usa `gpt-4o-mini` de OpenAI si se proporciona `AI_API_KEY`; no utiliza GitHub Copilot. El pronóstico horario no lo genera el LLM: SIPRAC calcula una estimación local explicable con las lecturas históricas cargadas y el chatbot puede interpretarla.
+
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
