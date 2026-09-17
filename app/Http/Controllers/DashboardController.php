@@ -137,6 +137,8 @@ class DashboardController extends Controller
             }
         }
 
+        $forecast = session('forecast', session('normalization_forecast', []));
+
         return view('dashboard.agricultor', compact(
             'fincas',
             'totalEstaciones',
@@ -144,7 +146,8 @@ class DashboardController extends Controller
             'totalEmpleados',
             'clima',
             'labels24h',
-            'temps24h'
+            'temps24h',
+            'forecast'
         ));
     }
 
@@ -182,6 +185,8 @@ class DashboardController extends Controller
             $humedades[] = $aggs?->h !== null ? round((float) $aggs->h, 1) : null;
         }
 
+        $forecast = session('forecast', session('normalization_forecast', []));
+
         return view('dashboard.admin', compact(
             'totalUsuarios',
             'totalFincas',
@@ -191,7 +196,8 @@ class DashboardController extends Controller
             'ultimasLecturas',
             'dias',
             'temps',
-            'humedades'
+            'humedades',
+            'forecast'
         ));
     }
 

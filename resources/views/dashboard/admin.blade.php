@@ -88,6 +88,8 @@
     </div>
 </div>
 
+@include('dashboard.partials.forecast-table')
+
 {{-- Botón de Normalización de Datos --}}
 <div class="row g-3 mb-4">
     <div class="col-12">
