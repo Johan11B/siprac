@@ -89,9 +89,36 @@
                     @endif
                     @if(auth()->user()->tieneAlgunRol(['agricultor', 'administrador']))
                     <li class="nav-item">
+                        <a href="{{ route('fincas.index') }}" class="nav-link {{ request()->routeIs('fincas.*') ? 'active' : '' }}" id="nav-fincas">
+                            <span class="nav-icon"><i class="bi bi-house-door-fill"></i></span>
+                            Fincas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('estaciones.index') }}" class="nav-link {{ request()->routeIs('estaciones.*') ? 'active' : '' }}" id="nav-estaciones">
+                            <span class="nav-icon"><i class="bi bi-broadcast-pin"></i></span>
+                            Estaciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ route('agricultor.empleados.index') }}" class="nav-link {{ request()->routeIs('agricultor.empleados.*') ? 'active' : '' }}" id="nav-empleados">
                             <span class="nav-icon"><i class="bi bi-people-fill"></i></span>
                             Empleados
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(auth()->user()->esAdmin())
+                    <li class="nav-item">
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}" id="nav-admin">
+                            <span class="nav-icon"><i class="bi bi-shield-lock-fill"></i></span>
+                            Administración
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('usuarios.index') }}" class="nav-link {{ request()->routeIs('usuarios.*') ? 'active' : '' }}" id="nav-usuarios">
+                            <span class="nav-icon"><i class="bi bi-people-fill"></i></span>
+                            Usuarios
                         </a>
                     </li>
                     @endif

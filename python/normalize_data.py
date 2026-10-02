@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Preprocesamiento de lecturas meteorológicas.
 1. Lectura flexible (Excel / CSV utf-16 tabulada / CSV estándar).
@@ -11,7 +9,6 @@ Preprocesamiento de lecturas meteorológicas.
    observaciones: se etiquetan. El consenso de 4 métodos marca outlier_consenso.
 6. Exporta Excel para descarga y CSV alineado a la tabla lecturas.
 """
-
 import json
 import math
 import os
