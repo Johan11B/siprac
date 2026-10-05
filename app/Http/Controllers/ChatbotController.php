@@ -61,7 +61,8 @@ class ChatbotController extends Controller
      */
     private function askGemini(string $systemPrompt, string $message): ?string
     {
-        $response = Http::timeout(25)
+        $response = Http::timeout(30)
+            ->retry(2, 800, throw: false)
             ->withHeaders(['x-goog-api-key' => config('services.gemini.key')])
             ->acceptJson()
             ->post(config('services.gemini.url'), [
@@ -76,7 +77,7 @@ class ChatbotController extends Controller
                 ],
                 'generationConfig' => [
                     'temperature' => 0.2,
-                    'maxOutputTokens' => 800,
+                    'maxOutputTokens' => 2048,
                 ],
             ]);
 
@@ -89,7 +90,19 @@ class ChatbotController extends Controller
             return null;
         }
 
-        return $response->json('candidates.0.content.parts.0.text');
+        $parts = $response->json('candidates.0.content.parts') ?? [];
+        $text = collect($parts)->pluck('text')->filter()->implode('');
+
+        if (trim($text) === '') {
+            Log::warning('Gemini devolvió una respuesta vacía', [
+                'finishReason' => $response->json('candidates.0.finishReason'),
+                'body' => $response->body(),
+            ]);
+
+            return null;
+        }
+
+        return $text;
     }
 
     /**
