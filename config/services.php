@@ -40,5 +40,9 @@ return [
         'url' => env('AI_API_URL', 'https://api.openai.com/v1/chat/completions'),
         'model' => env('AI_MODEL', 'gpt-4o-mini'),
     ],
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+        'url' => env('GEMINI_API_URL', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent'),
+    ],
 
 ];

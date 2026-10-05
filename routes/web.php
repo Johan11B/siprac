@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\Agricultor\EmpleadoController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Agricultor\EmpleadoController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataNormalizationController;
@@ -48,7 +48,9 @@ Route::middleware('auth')->group(function () {
 
     // Rutas existentes del dashboard (datos, alertas, configuración)
     Route::get('/dashboard/datos', [DashboardController::class, 'datos'])->name('dashboard.datos');
-    Route::post('/chatbot/message', [ChatbotController::class, 'message'])->name('chatbot.message');
+    Route::post('/chatbot/message', [ChatbotController::class, 'message'])
+        ->middleware('throttle:20,1')
+        ->name('chatbot.message');
 
     Route::get('/dashboard/alertas', function () {
         return view('dashboard.alertas');
