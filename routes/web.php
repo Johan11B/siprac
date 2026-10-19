@@ -20,6 +20,13 @@ Route::get('/', function () {
 })->name('home');
 
 // ============================================
+// Chatbot público — sin autenticación
+// ============================================
+Route::post('/chatbot/public', [ChatbotController::class, 'publicMessage'])
+    ->middleware('throttle:10,1')
+    ->name('chatbot.public');
+
+// ============================================
 // Rutas de autenticación (solo para invitados)
 // ============================================
 Route::middleware('guest')->group(function () {
@@ -51,6 +58,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/chatbot/message', [ChatbotController::class, 'message'])
         ->middleware('throttle:20,1')
         ->name('chatbot.message');
+
+    // Keep-alive: resets the server session without a full page reload
+    Route::get('/session/keep-alive', function () {
+        return response()->json(['ok' => true]);
+    })->name('session.keepalive');
 
     Route::get('/dashboard/alertas', function () {
         return view('dashboard.alertas');
