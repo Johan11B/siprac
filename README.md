@@ -442,7 +442,7 @@ Para ser transparentes sobre el estado del proyecto:
 
 ## 17. Autor
 
-- **Autor:** `[TU NOMBRE COMPLETO]`
+- **Autor:** `[Johan Steven Briceño Layton y Jhon Sebastian Murcia Romero]`
 - **Programa:** Ingeniería de Sistemas y Computación — Universidad de Cundinamarca
 - **Curso:** CADI Introducción a Machine Learning
 
