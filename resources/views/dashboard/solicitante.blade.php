@@ -33,7 +33,7 @@
                                 <i class="bi bi-person-check me-1"></i> Estado: Pendiente
                             </span>
                             <span class="badge" style="background: rgba(146, 64, 14, 0.6); font-size: 0.75rem; padding: 6px 12px;">
-                                <i class="bi bi-telephone me-1"></i> Contacto: admin@siprac.com
+                                <i class="bi bi-telephone me-1"></i> Contacto: johanbllayton@gmail.com
                             </span>
                         </div>
                     </div>
