@@ -49,7 +49,7 @@ class DataNormalizationController extends Controller
             // No dependemos de ninguna variable en .env: si el usuario no define
             // PYTHON_BIN, usamos 'python' en Windows y 'python3' en Linux/Mac,
             // que es lo que normalmente existe en cada plataforma por defecto.
-            $pythonBin = env('PYTHON_BIN') ?: (PHP_OS_FAMILY === 'Windows' ? 'python' : 'python3');
+            $pythonBin = config('services.python.bin') ?: (PHP_OS_FAMILY === 'Windows' ? 'python' : 'python3');
 
             $process = new Process([$pythonBin, $pythonScript, $absolutePath, $outputFile]);
 

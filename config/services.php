@@ -45,4 +45,8 @@ return [
         'url' => env('GEMINI_API_URL', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent'),
     ],
 
+    'python' => [
+        'bin' => env('PYTHON_BIN'),
+    ],
+
 ];
