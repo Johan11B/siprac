@@ -11,6 +11,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="SIPRAC - Sistema de Prevención y Alerta Climática." />
 
+    @include('partials.head-icons')
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -195,47 +197,16 @@
         </div>
     </div>
 
-    <!-- Asistente agroclimático -->
-    <section class="siprac-chatbot" aria-label="Asistente SIPRAC">
-        <button type="button" class="siprac-chatbot__toggle" id="chatbotToggle" aria-expanded="false" aria-controls="chatbotPanel" title="Abrir asistente SIPRAC">
-            <i class="bi bi-stars" aria-hidden="true"></i>
-            <span class="siprac-chatbot__toggle-label">Asistente IA</span>
-        </button>
-
-        <div class="siprac-chatbot__panel" id="chatbotPanel" hidden>
-            <header class="siprac-chatbot__header">
-                <div>
-                    <span class="siprac-chatbot__eyebrow">SIPRAC</span>
-                    <h2>Asistente agroclimático</h2>
-                    <p>Pregúntame sobre el proyecto, clima y cultivos.</p>
-                </div>
-                <button type="button" class="siprac-chatbot__close" id="chatbotClose" aria-label="Cerrar asistente">
-                    <i class="bi bi-x-lg" aria-hidden="true"></i>
-                </button>
-            </header>
-
-            <div class="siprac-chatbot__messages" id="chatbotMessages" aria-live="polite">
-                <div class="siprac-chatbot__message siprac-chatbot__message--assistant">
-                    Hola, soy el asistente de SIPRAC. Puedo explicarte sensores, lecturas, heladas, lluvias y alertas.
-                </div>
-            </div>
-
-            <div class="siprac-chatbot__suggestions" aria-label="Preguntas sugeridas">
-                <button type="button" data-chatbot-suggestion="¿Cómo detecta SIPRAC una helada?">Riesgo de heladas</button>
-                <button type="button" data-chatbot-suggestion="¿Qué variables monitorean los sensores?">Variables monitoreadas</button>
-                <button type="button" data-chatbot-suggestion="¿Cómo funciona SIPRAC?">Cómo funciona</button>
-            </div>
-
-            <form class="siprac-chatbot__form" id="chatbotForm">
-                <label class="visually-hidden" for="chatbotInput">Escribe tu pregunta</label>
-                <input id="chatbotInput" name="message" type="text" maxlength="1000" autocomplete="off" placeholder="Escribe una pregunta..." required>
-                <button type="submit" aria-label="Enviar pregunta" title="Enviar pregunta">
-                    <i class="bi bi-arrow-up" aria-hidden="true"></i>
-                </button>
-            </form>
-            <p class="siprac-chatbot__disclaimer">La información es orientativa. Verifica las alertas y lecturas de tu finca.</p>
-        </div>
-    </section>
+    @include('partials.chatbot', [
+        'endpoint'    => route('chatbot.message'),
+        'mode'        => 'private',
+        'greeting'    => 'Hola, soy el asistente de SIPRAC. Puedo explicarte sensores, lecturas, heladas, lluvias y alertas.',
+        'suggestions' => [
+            'Riesgo de heladas'     => '¿Cómo detecta SIPRAC una helada?',
+            'Variables monitoreadas' => '¿Qué variables monitorean los sensores?',
+            'Cómo funciona'         => '¿Cómo funciona SIPRAC?',
+        ],
+    ])
 
     <!-- Scripts -->
     <script
@@ -282,80 +253,8 @@
         setInterval(updateCurrentDateTime, 60000);
     </script>
 
-    <script>
-        (() => {
-            const toggle = document.getElementById('chatbotToggle');
-            const close = document.getElementById('chatbotClose');
-            const panel = document.getElementById('chatbotPanel');
-            const form = document.getElementById('chatbotForm');
-            const input = document.getElementById('chatbotInput');
-            const messages = document.getElementById('chatbotMessages');
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
-            const setOpen = (isOpen) => {
-                panel.hidden = !isOpen;
-                toggle.setAttribute('aria-expanded', String(isOpen));
-                if (isOpen) input.focus();
-            };
-
-            const addMessage = (text, type) => {
-                const message = document.createElement('div');
-                message.className = `siprac-chatbot__message siprac-chatbot__message--${type}`;
-                message.textContent = text;
-                messages.appendChild(message);
-                messages.scrollTop = messages.scrollHeight;
-                return message;
-            };
-
-            toggle.addEventListener('click', () => setOpen(panel.hidden));
-            close.addEventListener('click', () => setOpen(false));
-
-            document.querySelectorAll('[data-chatbot-suggestion]').forEach((button) => {
-                button.addEventListener('click', () => {
-                    input.value = button.dataset.chatbotSuggestion;
-                    form.requestSubmit();
-                });
-            });
-
-            form.addEventListener('submit', async (event) => {
-                event.preventDefault();
-                const message = input.value.trim();
-                if (!message) return;
-
-                addMessage(message, 'user');
-                input.value = '';
-                input.disabled = true;
-                const loading = addMessage('Estoy consultando la información de SIPRAC...', 'assistant siprac-chatbot__message--loading');
-
-                try {
-                    const response = await fetch('{{ route('chatbot.message') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                        body: JSON.stringify({ message }),
-                    });
-                    const data = await response.json();
-                    loading.remove();
-
-                    if (!response.ok) {
-                        throw new Error(data.message || 'No se pudo procesar la pregunta.');
-                    }
-
-                    addMessage(data.reply, 'assistant');
-                } catch (error) {
-                    loading.remove();
-                    addMessage(error.message || 'No hay conexión con el asistente. Inténtalo de nuevo.', 'assistant siprac-chatbot__message--error');
-                } finally {
-                    input.disabled = false;
-                    input.focus();
-                }
-            });
-        })();
-    </script>
+    <!-- Idle logout (session timeout warning) -->
+    <script src="{{ asset('asset/js/idle-logout.js') }}" data-minutes="{{ config('session.lifetime') }}" data-keepalive="{{ route('session.keepalive') }}" defer></script>
 
     <!-- Extra scripts per page -->
     @yield('scripts')

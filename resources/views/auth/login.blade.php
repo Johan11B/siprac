@@ -1,12 +1,15 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title>Inicio de Sesión</title>
+        <title>SIPRAC — Iniciar sesión</title>
         <meta charset="utf-8" />
         <meta
             name="viewport"
             content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
+
+        @include('partials.head-icons')
+
         <!-- Bootstrap CSS v5.2.1 -->
         <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -19,7 +22,7 @@
     <body id="pagina-login" class="d-flex flex-column min-vh-100">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <div class="container-fluid">
-                    <a class="navbar-brand d-flex align-items-center">
+                    <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
                         <img src="{{ asset('asset/images/icono.webp') }}" alt="Logo SIPRAC" class="logo-navbar">
                         <span class="fw-bold">SIPRAC</span>
                     </a>
@@ -30,7 +33,7 @@
                 
                     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                         <ul class="navbar-nav align-items-center">
-                            <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Inicio</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Nosotros</a></li>
                             <li class="nav-item me-3"><a class="nav-link" href="#">Tecnología</a></li>
                             <li class="nav-item">

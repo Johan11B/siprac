@@ -1,9 +1,11 @@
 <!doctype html>
 <html lang="es">
 <head>
-    <title>Registro de Usuario - SIPRAC</title>
+    <title>SIPRAC — Registro</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    @include('partials.head-icons')
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -18,6 +20,12 @@
             </div>
             <div class="col-lg-6 d-flex align-items-center justify-content-center p-4">
                 <div class="contenedor-compacto" style="max-width: 450px; width: 100%;">
+                    <a href="{{ route('home') }}" class="d-inline-flex align-items-center text-decoration-none mb-3" style="color: #0f766e; font-size: 0.88rem; font-weight: 500;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 4px;">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                        </svg>
+                        Volver al inicio
+                    </a>
                     <div class="text-center mb-4">
                         <img src="{{ asset('asset/images/icono.webp') }}" alt="SIPRAC" style="height: 150px; width: auto;">
                         <h1 class="h2 mt-3">Registro de Usuario</h1>

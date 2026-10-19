@@ -1,13 +1,16 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title>SIPRAC</title>
+        <title>SIPRAC — Inicio</title>
         <!-- Required meta tags -->
         <meta charset="utf-8" />
         <meta
             name="viewport"
             content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        @include('partials.head-icons')
 
         <!-- Bootstrap CSS v5.2.1 -->
         <link
@@ -23,7 +26,7 @@
         <header>
             <nav class="navbar navbar-expand-lg navbar-light">
                 <div class="container-fluid">
-                    <a class="navbar-brand d-flex align-items-center">
+                    <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
                         <img src="{{ asset('asset/images/icono.webp') }}" alt="Logo SIPRAC" class="logo-navbar">
                         <span class="fw-bold">SIPRAC</span>
                     </a>
@@ -34,7 +37,7 @@
                 
                     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                         <ul class="navbar-nav align-items-center">
-                            <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Inicio</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Nosotros</a></li>
                             <li class="nav-item me-3"><a class="nav-link" href="#">Tecnología</a></li>
                             <li class="nav-item">
@@ -90,6 +93,18 @@
                 <p class= "mt-2">© 2026 SIPRAC | Ingeniería de Sistemas y computación</p>
             </div>
         </footer>
+
+        @include('partials.chatbot', [
+            'endpoint'    => route('chatbot.public'),
+            'mode'        => 'public',
+            'greeting'    => 'Hola, soy el asistente de SIPRAC. Puedo contarte sobre el proyecto. Para consultar las lecturas de tu finca, inicia sesión.',
+            'suggestions' => [
+                '¿Qué es SIPRAC?',
+                '¿Cómo se integra la Declaración de la Persona Transhumana?',
+                'What does SIPRAC monitor?',
+            ],
+        ])
+
         <!-- Bootstrap JavaScript Libraries -->
         <script
             src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
