@@ -136,7 +136,7 @@
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label" for="umbral-helada">Umbral de helada (°C)</label>
-                            <input type="number" class="form-control" id="umbral-helada" value="3" step="0.5">
+                            <input type="number" class="form-control" id="umbral-helada" value="2" step="0.5">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label" for="umbral-critico">Umbral crítico (°C)</label>

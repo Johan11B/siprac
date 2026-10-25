@@ -187,7 +187,7 @@
                         <div class="col-sm-6 col-lg-3">
                             <div class="summary-card">
                                 <div class="summary-label">Lluvia Total</div>
-                                <div class="summary-value">{{ session('normalization_summary.lluvia_total') }} m</div>
+                                <div class="summary-value">{{ session('normalization_summary.lluvia_total') }} mm</div>
                             </div>
                         </div>
                     </div>

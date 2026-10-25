@@ -190,7 +190,7 @@
                         </div>
                         <div class="flex-grow-1">
                             <div style="font-size: 0.82rem; font-weight: 600; color: #0f172a;">Umbral de Helada</div>
-                            <div style="font-size: 0.78rem; color: #64748b;">Actual: 3°C</div>
+                            <div style="font-size: 0.78rem; color: #64748b;">Actual: 2°C</div>
                         </div>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="toggleHelada" checked>
