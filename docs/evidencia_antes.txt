@@ -1,0 +1,90 @@
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp01_acceso_por_rol(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp02_usuario_inactivo_no_se_autentica(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp03_estaciones_ajenas(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp04_carga_sin_duplicados(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp05_asistente_sin_fincas(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp06_pronostico_del_usuario(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   FAIL  Tests\Feature\IntegracionSipracTest
+  ✓ cp01 acceso por rol                                                                                          1.11s
+  ⨯ cp02 usuario inactivo no se autentica                                                                        0.08s
+  ⨯ cp03 estaciones ajenas                                                                                       0.04s
+  ✓ cp04 carga sin duplicados                                                                                    0.03s
+  ⨯ cp05 asistente sin fincas                                                                                    0.06s
+  ⨯ cp06 pronostico del usuario                                                                                  0.15s
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\IntegracionSipracTest > cp02 usuario inactivo no se autentica
+  The user is authenticated
+Failed asserting that true is false.
+
+  at tests\Feature\IntegracionSipracTest.php:102
+     98▕         $this->post('/login', [
+     99▕             'email'    => $user->email,
+    100▕             'password' => 'secreto123',
+    101▕         ]);
+  ➜ 102▕         $this->assertGuest();
+    103▕
+    104▕         // actingAs: GET /dashboard should NOT respond 200 (must redirect to login)
+    105▕         $response = $this->actingAs($user)->get('/dashboard');
+    106▕         $this->assertNotEquals(200, $response->getStatusCode());
+
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\IntegracionSipracTest > cp03 estaciones ajenas
+  Expected response status code [403] but received 302.
+Failed asserting that 302 is identical to 403.
+
+  at tests\Feature\IntegracionSipracTest.php:155
+    151▕                 'tipo_estacion'   => 'meteorologica_principal',
+    152▕                 'finca_id'        => $fincaB->id,  // finca ajena!
+    153▕             ]);
+    154▕
+  ➜ 155▕         $response->assertStatus(403);
+    156▕
+    157▕         // La finca de la estación NO debe haber cambiado
+    158▕         $this->assertEquals($fincaA->id, $estacionA->fresh()->finca_id);
+    159▕     }
+
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\IntegracionSipracTest > cp05 asistente sin fincas
+  An expected request was not recorded.
+Failed asserting that false is true.
+
+  at vendor\laravel\framework\src\Illuminate\Http\Client\Factory.php:395
+    391▕      * @return void
+    392▕      */
+    393▕     public function assertSent($callback)
+    394▕     {
+  ➜ 395▕         PHPUnit::assertTrue(
+    396▕             $this->recorded($callback)->count() > 0,
+    397▕             'An expected request was not recorded.'
+    398▕         );
+    399▕     }
+
+  1   vendor\laravel\framework\src\Illuminate\Http\Client\Factory.php:395
+  2   vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:363
+
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\IntegracionSipracTest > cp06 pronostico del usuario
+  Failed asserting that 16 matches expected 8.
+
+  at tests\Feature\IntegracionSipracTest.php:277
+    273▕         // Call forecast filtering only by estacionA
+    274▕         $service  = new WeatherPredictionService();
+    275▕         $forecast = $service->forecast(3, [$estacionA->id]);
+    276▕
+  ➜ 277▕         $this->assertEquals(8, $forecast['data_points']);
+    278▕
+    279▕         // All estimated temperatures should be < 10 (since only cold station data)
+    280▕         foreach ($forecast['items'] as $item) {
+    281▕             $this->assertLessThan(10, $item['temperature'],
+
+  1   tests\Feature\IntegracionSipracTest.php:277
+
+
+  Tests:    4 failed, 2 passed (20 assertions)
+  Duration: 1.86s
