@@ -19,26 +19,33 @@
     </div>
 
     <!-- Filter Bar -->
-    <div class="filter-bar">
-        <div class="d-flex align-items-center gap-2 me-auto">
-            <i class="bi bi-funnel text-muted"></i>
-            <span style="font-size: 0.82rem; font-weight: 600; color: #334155;">Filtros:</span>
+    <form method="GET" action="{{ route('dashboard.datos') }}" id="form-filtros">
+        <div class="filter-bar">
+            <div class="d-flex align-items-center gap-2 me-auto">
+                <i class="bi bi-funnel text-muted"></i>
+                <span style="font-size: 0.82rem; font-weight: 600; color: #334155;">Filtros:</span>
+            </div>
+
+            <select class="form-select" id="filter-estacion" name="estacion_id" aria-label="Filtrar por estación">
+                <option value="">Todas las estaciones</option>
+                @foreach ($estaciones as $est)
+                    <option value="{{ $est->id }}" {{ $estacionId == $est->id ? 'selected' : '' }}>
+                        {{ $est->nombre_estacion }}
+                    </option>
+                @endforeach
+            </select>
+
+            <select class="form-select" id="filter-periodo" name="periodo" aria-label="Filtrar por período">
+                <option value="24h"    {{ $periodo === '24h'    ? 'selected' : '' }}>Últimas 24 horas</option>
+                <option value="semana" {{ $periodo === 'semana' ? 'selected' : '' }}>Última semana</option>
+                <option value="mes"   {{ $periodo === 'mes'    ? 'selected' : '' }}>Último mes</option>
+            </select>
+
+            <button class="btn btn-filter" type="submit" id="btn-aplicar-filtro">
+                <i class="bi bi-search me-1"></i> Aplicar
+            </button>
         </div>
-        <select class="form-select" id="filter-estacion" aria-label="Filtrar por estación">
-            <option selected>Todas las estaciones</option>
-            <option>Estación Ubaté Centro</option>
-            <option>Estación Laguna Suesca</option>
-            <option>Estación Cucunubá</option>
-        </select>
-        <select class="form-select" id="filter-periodo" aria-label="Filtrar por período">
-            <option>Últimas 24 horas</option>
-            <option selected>Última semana</option>
-            <option>Último mes</option>
-        </select>
-        <button class="btn btn-filter" type="button">
-            <i class="bi bi-search me-1"></i> Aplicar
-        </button>
-    </div>
+    </form>
 
     <!-- Summary Mini Cards -->
     <div class="section-label">Resumen del Período</div>
@@ -48,7 +55,9 @@
                 <div class="mini-icon" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #3b82f6;">
                     <i class="bi bi-thermometer-high"></i>
                 </div>
-                <div class="mini-value">18.2°C</div>
+                <div class="mini-value" id="val-temp-max">
+                    {{ $tempMax !== null ? number_format($tempMax, 1) . '°C' : '—' }}
+                </div>
                 <div class="mini-label">Temp. Máxima</div>
             </div>
         </div>
@@ -57,7 +66,9 @@
                 <div class="mini-icon" style="background: linear-gradient(135deg, #cffafe, #a5f3fc); color: #06b6d4;">
                     <i class="bi bi-thermometer-low"></i>
                 </div>
-                <div class="mini-value">2.1°C</div>
+                <div class="mini-value" id="val-temp-min">
+                    {{ $tempMin !== null ? number_format($tempMin, 1) . '°C' : '—' }}
+                </div>
                 <div class="mini-label">Temp. Mínima</div>
             </div>
         </div>
@@ -66,7 +77,9 @@
                 <div class="mini-icon" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #10b981;">
                     <i class="bi bi-moisture"></i>
                 </div>
-                <div class="mini-value">82%</div>
+                <div class="mini-value" id="val-humedad">
+                    {{ $humedadPromedio !== null ? number_format($humedadPromedio, 1) . '%' : '—' }}
+                </div>
                 <div class="mini-label">Humedad Promedio</div>
             </div>
         </div>
@@ -75,7 +88,9 @@
                 <div class="mini-icon" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: #8b5cf6;">
                     <i class="bi bi-cloud-rain-heavy"></i>
                 </div>
-                <div class="mini-value">14.7 mm</div>
+                <div class="mini-value" id="val-lluvia">
+                    {{ $lluviaAcumulada !== null ? number_format($lluviaAcumulada, 1) . ' mm' : '—' }}
+                </div>
                 <div class="mini-label">Lluvia Acumulada</div>
             </div>
         </div>
@@ -83,7 +98,6 @@
 
     <!-- Charts Row -->
     <div class="row g-3 mb-4">
-        <!-- Temp + Humidity Chart -->
         <div class="col-lg-8">
             <div class="chart-card h-100">
                 <div class="card-header-custom">
@@ -94,12 +108,10 @@
                     <span class="chart-period-badge">Semanal</span>
                 </div>
                 <div style="position: relative; height: 300px;">
-                    <canvas id="weeklyChart" aria-label="Gráfica de temperatura y humedad semanal" role="img"></canvas>
+                    <canvas id="weeklyChart" aria-label="Grafica de temperatura y humedad semanal" role="img"></canvas>
                 </div>
             </div>
         </div>
-
-        <!-- Wind Rose / Precipitation -->
         <div class="col-lg-4">
             <div class="chart-card h-100">
                 <div class="card-header-custom">
@@ -110,7 +122,7 @@
                     <span class="chart-period-badge">7 días</span>
                 </div>
                 <div style="position: relative; height: 300px;">
-                    <canvas id="rainChart" aria-label="Gráfica de precipitación diaria" role="img"></canvas>
+                    <canvas id="rainChart" aria-label="Grafica de precipitacion diaria" role="img"></canvas>
                 </div>
             </div>
         </div>
@@ -122,11 +134,14 @@
         <div class="card-header-custom">
             <h6>
                 <i class="bi bi-table text-muted"></i>
-                Últimos Registros — Estación Ubaté Centro
+                Últimos Registros — {{ $estacionNombre }}
             </h6>
-            <button class="btn btn-outline-secondary btn-sm" style="border-radius: 8px; font-size: 0.78rem;">
+            <a href="{{ route('dashboard.datos', array_merge(request()->query(), ['export' => 'csv'])) }}"
+               class="btn btn-outline-secondary btn-sm"
+               style="border-radius: 8px; font-size: 0.78rem;"
+               id="btn-exportar-csv">
                 <i class="bi bi-download me-1"></i> Exportar CSV
-            </button>
+            </a>
         </div>
         <div class="table-responsive">
             <table class="data-table" id="tabla-datos">
@@ -141,76 +156,61 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><i class="bi bi-clock me-1 text-muted"></i>08/04/2026 22:00</td>
-                        <td><strong>9.5°C</strong></td>
-                        <td>85%</td>
-                        <td>12 km/h</td>
-                        <td>0.0 mm</td>
-                        <td><span class="status-badge online"><i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i> Normal</span></td>
-                    </tr>
-                    <tr>
-                        <td><i class="bi bi-clock me-1 text-muted"></i>08/04/2026 21:00</td>
-                        <td><strong>10.2°C</strong></td>
-                        <td>82%</td>
-                        <td>14 km/h</td>
-                        <td>0.2 mm</td>
-                        <td><span class="status-badge online"><i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i> Normal</span></td>
-                    </tr>
-                    <tr>
-                        <td><i class="bi bi-clock me-1 text-muted"></i>08/04/2026 20:00</td>
-                        <td><strong>11.0°C</strong></td>
-                        <td>78%</td>
-                        <td>16 km/h</td>
-                        <td>0.5 mm</td>
-                        <td><span class="status-badge online"><i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i> Normal</span></td>
-                    </tr>
-                    <tr>
-                        <td><i class="bi bi-clock me-1 text-muted"></i>08/04/2026 19:00</td>
-                        <td><strong>12.3°C</strong></td>
-                        <td>75%</td>
-                        <td>18 km/h</td>
-                        <td>1.0 mm</td>
-                        <td><span class="status-badge online"><i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i> Normal</span></td>
-                    </tr>
-                    <tr>
-                        <td><i class="bi bi-clock me-1 text-muted"></i>08/04/2026 18:00</td>
-                        <td><strong>13.5°C</strong></td>
-                        <td>72%</td>
-                        <td>20 km/h</td>
-                        <td>0.8 mm</td>
-                        <td><span class="status-badge online"><i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i> Normal</span></td>
-                    </tr>
-                    <tr>
-                        <td><i class="bi bi-clock me-1 text-muted"></i>08/04/2026 05:00</td>
-                        <td><strong>3.2°C</strong></td>
-                        <td>95%</td>
-                        <td>5 km/h</td>
-                        <td>0.0 mm</td>
-                        <td><span class="status-badge warning"><i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i> Precaución</span></td>
-                    </tr>
-                    <tr>
-                        <td><i class="bi bi-clock me-1 text-muted"></i>08/04/2026 04:00</td>
-                        <td><strong>1.8°C</strong></td>
-                        <td>98%</td>
-                        <td>3 km/h</td>
-                        <td>0.0 mm</td>
-                        <td><span class="status-badge offline"><i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i> Helada</span></td>
-                    </tr>
+                    @forelse ($ultimasLecturas as $lectura)
+                        @php
+                            $estado     = $lectura->estadoClima();
+                            $badgeClass = match ($estado) {
+                                'Helada'     => 'offline',
+                                'Precaución' => 'warning',
+                                'Atípico'    => 'warning',
+                                default      => 'online',
+                            };
+                        @endphp
+                        <tr>
+                            <td>
+                                <i class="bi bi-clock me-1 text-muted"></i>
+                                {{ $lectura->fecha_lectura?->format('d/m/Y H:i') ?? '—' }}
+                            </td>
+                            <td>
+                                <strong>{{ $lectura->temp_externa !== null ? number_format($lectura->temp_externa, 1) . '°C' : '—' }}</strong>
+                            </td>
+                            <td>{{ $lectura->humedad_externa !== null ? $lectura->humedad_externa . '%' : '—' }}</td>
+                            <td>{{ $lectura->viento_vel !== null ? number_format($lectura->viento_vel, 1) . ' km/h' : '—' }}</td>
+                            <td>{{ $lectura->lluvia_dia !== null ? number_format($lectura->lluvia_dia, 1) . ' mm' : '0.0 mm' }}</td>
+                            <td>
+                                <span class="status-badge {{ $badgeClass }}">
+                                    <i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i>
+                                    {{ $estado }}
+                                </span>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox me-2"></i>No hay registros disponibles para el período seleccionado.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
+        @if (method_exists($ultimasLecturas, 'links'))
+            <div class="d-flex justify-content-center mt-3">
+                {{ $ultimasLecturas->appends(request()->query())->links('pagination::bootstrap-5') }}
+            </div>
+        @endif
     </div>
 
 @endsection
 
 @section('scripts')
 <script>
-    // ============================================
-    // Weekly Temperature + Humidity Chart
-    // ============================================
+    const chartLabels = {!! json_encode($dias) !!};
+    const chartTemps  = {!! json_encode($temps) !!};
+    const chartHums   = {!! json_encode($humedades) !!};
+    const chartRains  = {!! json_encode($lluvias) !!};
+
     const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
-    const weeklyDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
     const gradientTemp = weeklyCtx.createLinearGradient(0, 0, 0, 300);
     gradientTemp.addColorStop(0, 'rgba(59, 130, 246, 0.12)');
@@ -223,11 +223,11 @@
     new Chart(weeklyCtx, {
         type: 'line',
         data: {
-            labels: weeklyDays,
+            labels: chartLabels,
             datasets: [
                 {
                     label: 'Temperatura (°C)',
-                    data: [11.2, 10.5, 12.8, 14.0, 9.3, 13.1, 12.5],
+                    data: chartTemps,
                     borderColor: '#3b82f6',
                     backgroundColor: gradientTemp,
                     borderWidth: 2.5,
@@ -237,11 +237,12 @@
                     pointBackgroundColor: '#3b82f6',
                     pointBorderColor: '#fff',
                     pointBorderWidth: 2,
+                    spanGaps: true,
                     yAxisID: 'y',
                 },
                 {
                     label: 'Humedad (%)',
-                    data: [78, 82, 75, 70, 88, 74, 80],
+                    data: chartHums,
                     borderColor: '#10b981',
                     backgroundColor: gradientHum,
                     borderWidth: 2.5,
@@ -251,6 +252,7 @@
                     pointBackgroundColor: '#10b981',
                     pointBorderColor: '#fff',
                     pointBorderWidth: 2,
+                    spanGaps: true,
                     yAxisID: 'y1',
                 }
             ]
@@ -295,27 +297,21 @@
         }
     });
 
-    // ============================================
-    // Daily Precipitation Chart
-    // ============================================
     const rainCtx = document.getElementById('rainChart').getContext('2d');
+    const maxRain = Math.max(...chartRains.map(v => v ?? 0), 0.01);
+    const rainColors = chartRains.map(v => {
+        const alpha = v !== null ? 0.3 + 0.6 * (v / maxRain) : 0.2;
+        return 'rgba(6, 182, 212, ' + alpha.toFixed(2) + ')';
+    });
 
     new Chart(rainCtx, {
         type: 'bar',
         data: {
-            labels: weeklyDays,
+            labels: chartLabels,
             datasets: [{
                 label: 'Precipitación (mm)',
-                data: [2.4, 0.8, 5.1, 0.0, 3.7, 1.2, 1.5],
-                backgroundColor: [
-                    'rgba(6, 182, 212, 0.7)',
-                    'rgba(6, 182, 212, 0.5)',
-                    'rgba(6, 182, 212, 0.9)',
-                    'rgba(6, 182, 212, 0.2)',
-                    'rgba(6, 182, 212, 0.8)',
-                    'rgba(6, 182, 212, 0.5)',
-                    'rgba(6, 182, 212, 0.6)',
-                ],
+                data: chartRains,
+                backgroundColor: rainColors,
                 borderRadius: 8,
                 borderSkipped: false,
                 barThickness: 28,
@@ -330,7 +326,7 @@
                     backgroundColor: '#0f172a',
                     cornerRadius: 10,
                     padding: 10,
-                    callbacks: { label: (item) => `${item.parsed.y} mm` }
+                    callbacks: { label: (item) => (item.parsed.y ?? 0) + ' mm' }
                 }
             },
             scales: {
