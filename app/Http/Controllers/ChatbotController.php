@@ -27,10 +27,39 @@ class ChatbotController extends Controller
         ]);
 
         $message      = trim($validated['message']);
-        $prediction   = $predictionService->forecast(3);
+        $estacionIds  = $this->estacionIdsVisibles($request->user());
+        $prediction   = $predictionService->forecast(3, $estacionIds);
         $systemPrompt = $this->systemPrompt($prediction, $request->user());
 
         return $this->respond($systemPrompt, $message);
+    }
+
+    /**
+     * Retorna los IDs de las estaciones accesibles por el usuario:
+     *  - Administrador: null (sin filtrar)
+     *  - Usuario con fincas: arreglo de IDs de estaciones
+     *  - Sin usuario o sin fincas: []
+     */
+    private function estacionIdsVisibles(?User $user): ?array
+    {
+        if (! $user) {
+            return [];
+        }
+
+        if ($user->esAdmin()) {
+            return null;
+        }
+
+        $fincaIds = $user->fincas()->pluck('id')
+            ->merge($user->fincasAsociadasActivas()->pluck('fincas.id'))
+            ->unique()
+            ->values();
+
+        if ($fincaIds->isEmpty()) {
+            return [];
+        }
+
+        return Estacion::whereIn('finca_id', $fincaIds)->pluck('id')->all();
     }
 
     /**

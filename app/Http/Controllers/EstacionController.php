@@ -126,6 +126,16 @@ class EstacionController extends Controller
             'activo'               => ['sometimes', 'boolean'],
         ]);
 
+        if (! $user->esAdmin()) {
+            $esDuenioFinca = Finca::where('id', $validated['finca_id'])
+                ->where('propietario_id', $user->id)
+                ->exists();
+
+            if (! $esDuenioFinca) {
+                abort(403, 'No tienes permiso para asociar la estación a esta finca.');
+            }
+        }
+
         $estacione->update($validated);
 
         return redirect()

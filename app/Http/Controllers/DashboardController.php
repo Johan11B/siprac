@@ -35,6 +35,8 @@ class DashboardController extends Controller
             $estacionesQuery->whereIn('finca_id', $user->fincas()->pluck('id'));
         } elseif ($user->esTecnico() && ! $user->esAdmin()) {
             $estacionesQuery->whereIn('finca_id', $user->fincasAsociadasActivas()->pluck('fincas.id'));
+        } elseif (! $user->esAdmin() && ! $user->esAgricultor() && ! $user->esTecnico()) {
+            $estacionesQuery->whereRaw('1 = 0');
         }
 
         $estaciones = $estacionesQuery->get();

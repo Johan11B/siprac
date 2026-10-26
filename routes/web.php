@@ -49,12 +49,12 @@ Route::post('/logout', [LoginController::class, 'destroy'])
 // ============================================
 // Dashboard — Redirige según rol del usuario
 // ============================================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
     // Dashboard principal (redirige según rol)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Rutas existentes del dashboard (datos, alertas, configuración)
-    Route::get('/dashboard/datos', [DashboardController::class, 'datos'])->name('dashboard.datos');
+    Route::get('/dashboard/datos', [DashboardController::class, 'datos'])->middleware('role:agricultor,tecnico,administrador')->name('dashboard.datos');
     Route::post('/chatbot/message', [ChatbotController::class, 'message'])
         ->middleware('throttle:20,1')
         ->name('chatbot.message');
@@ -66,11 +66,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard/alertas', function () {
         return view('dashboard.alertas');
-    })->name('dashboard.alertas');
+    })->middleware('role:agricultor,tecnico,administrador')->name('dashboard.alertas');
 
     Route::get('/dashboard/configuracion', function () {
         return view('dashboard.configuracion');
-    })->name('dashboard.configuracion');
+    })->middleware('role:agricultor,tecnico,administrador')->name('dashboard.configuracion');
 
     // ========================================
     // Normalización de Datos (Admin y Agricultor)

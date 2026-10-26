@@ -19,7 +19,7 @@ class LoginController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
-        if (! auth()->attempt($credentials)) { // Intenta autenticar al usuario con las credenciales proporcionadas
+        if (! auth()->attempt(array_merge($credentials, ['activo' => true]))) { // Intenta autenticar al usuario con las credenciales proporcionadas
             throw ValidationException::withMessages([
                 'email' => ['Las credenciales no son correctas.'],
             ]);

@@ -8,13 +8,14 @@ use Illuminate\Support\Collection;
 
 class WeatherPredictionService
 {
-    public function forecast(int $hours = 12): array
+    public function forecast(int $hours = 12, ?array $estacionIds = null): array
     {
         $timezone = config('app.timezone', 'America/Bogota');
         $now = Carbon::now($timezone)->startOfHour();
         $readings = Lectura::query()
             ->where('fecha_lectura', '>=', $now->copy()->subDays(14)->setTimezone('UTC'))
             ->whereNotNull('temp_externa')
+            ->when($estacionIds !== null, fn ($q) => $q->whereIn('estacion_id', $estacionIds))
             ->orderBy('fecha_lectura')
             ->get([
                 'fecha_lectura',
