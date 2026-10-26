@@ -16,7 +16,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
     && sed -ri -e 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 
-RUN printf "upload_max_filesize=25M\npost_max_size=25M\nmax_execution_time=300\n" \
+RUN printf "upload_max_filesize=25M\npost_max_size=25M\nmax_execution_time=300\nexpose_php=Off\n" \
     > /usr/local/etc/php/conf.d/uploads.ini
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
