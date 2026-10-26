@@ -1,0 +1,28 @@
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp01_acceso_por_rol(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp02_usuario_inactivo_no_se_autentica(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp03_estaciones_ajenas(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp04_carga_sin_duplicados(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp05_asistente_sin_fincas(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   WARN  Metadata found in doc-comment for method Tests\Feature\IntegracionSipracTest::cp06_pronostico_del_usuario(). Metadata in doc-comments is deprecated and will no longer be supported in PHPUnit 12. Update your test code to use attributes instead.
+
+   PASS  Tests\Unit\ExampleTest
+  ✓ that true is true                                                                                            0.01s  
+
+   PASS  Tests\Feature\ExampleTest
+  ✓ the application returns a successful response                                                                0.23s  
+
+   PASS  Tests\Feature\IntegracionSipracTest
+  ✓ cp01 acceso por rol                                                                                          0.21s  
+  ✓ cp02 usuario inactivo no se autentica                                                                        0.27s  
+  ✓ cp03 estaciones ajenas                                                                                       0.08s  
+  ✓ cp04 carga sin duplicados                                                                                    0.03s  
+  ✓ cp05 asistente sin fincas                                                                                    0.04s  
+  ✓ cp06 pronostico del usuario                                                                                  0.03s  
+
+  Tests:    8 passed (27 assertions)
+  Duration: 1.09s

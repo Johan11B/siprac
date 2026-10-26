@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Agricultor\EmpleadoController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataNormalizationController;
@@ -16,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 // Ruta pública — Landing page
 // ============================================
 Route::get('/', function () {
-    return view('bienvenida');
+    return view('welcome');
 })->name('home');
 
 // ============================================
@@ -39,6 +41,13 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('login.store');
+
+    Route::get('/password/reset', [ForgotPasswordController::class, 'create'])->name('password.request');
+    Route::post('/password/email', [ForgotPasswordController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('password.email');
+    Route::get('/password/reset/{token}', [ResetPasswordController::class, 'create'])->name('password.reset');
+    Route::post('/password/reset', [ResetPasswordController::class, 'store'])->name('password.update');
 });
 
 // Logout (solo para autenticados)
