@@ -49,7 +49,7 @@
                         <div class="mb-3">
                             <label for="password" class="form-label fw-medium" style="font-size: 0.85rem;">Contraseña temporal <span class="text-danger">*</span></label>
                             <input type="text" name="password" id="password" class="form-control @error('password') is-invalid @enderror"
-                                   value="{{ old('password', 'Siprac2026') }}" required minlength="8">
+                                   value="{{ old('password', $sugerida ?? '') }}" required minlength="8">
                             <div class="form-text" style="font-size: 0.75rem;"><i class="bi bi-info-circle me-1"></i>El empleado deberá cambiarla al iniciar sesión. Mínimo 8 caracteres.</div>
                         </div>
 

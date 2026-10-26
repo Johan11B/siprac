@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * Controlador para que un agricultor gestione los empleados (trabajadores)
@@ -40,8 +41,9 @@ class EmpleadoController extends Controller
     {
         $user = $request->user();
         $fincas = $user->fincas()->get();
+        $sugerida = Str::password(12);
 
-        return view('agricultor.empleados.create', compact('fincas'));
+        return view('agricultor.empleados.create', compact('fincas', 'sugerida'));
     }
 
     /**
