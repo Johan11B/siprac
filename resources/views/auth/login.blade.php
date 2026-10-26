@@ -34,8 +34,8 @@
                     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                         <ul class="navbar-nav align-items-center">
                             <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Inicio</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Nosotros</a></li>
-                            <li class="nav-item me-3"><a class="nav-link" href="#">Tecnología</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#nosotros">Nosotros</a></li>
+                            <li class="nav-item me-3"><a class="nav-link" href="{{ route('home') }}#tecnologia">Tecnología</a></li>
                             <li class="nav-item">
                                 <a class="btn btn-outline-dark btn-sm px-4 py-2" href="{{route('login')}}">Iniciar Sesión</a>
                             </li>
@@ -59,12 +59,15 @@
                         @csrf
                     
                         <label for="email">Correo Electrónico:</label>
-                        <input type="email" name="email" placeholder="Escribe el correo"/>
+                        <input type="email" name="email" placeholder="Escribe el correo" value="{{ old('email') }}"/>
                     
                         <label for="password">Contraseña:</label>
                         <input type="password" name="password" placeholder="Contraseña"/> 
                     
                         <button class="btn btn-login" type="submit">Iniciar Sesión</button>
+                        @if (session('status'))
+                            <div class="alert alert-success mt-3 mb-0">{{ session('status') }}</div>
+                        @endif
                         @if($errors->any())
                             <div class="alert alert-danger">
                                 @foreach($errors->all() as $error)
@@ -72,6 +75,7 @@
                                 @endforeach
                             </div>
                         @endif
+                        <a href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
                         <a href="{{ route('register') }}">¿No tienes una cuenta? Regístrate</a>
                     </form>
                 </div>
